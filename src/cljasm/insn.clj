@@ -63,6 +63,8 @@
 (defn asm-new [type]
   (visit-type-insn (this-method) NEW type))
 
-
+(defn asm-label [label]
+  {:pre [(keyword? label)]}
+  (visit-label (this-method) (method-label label)))
 
 
