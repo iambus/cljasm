@@ -1,5 +1,6 @@
 (ns cljasm.test.core
-  (:use [cljasm.core cljasm.insn])
+  (:use cljasm.core
+        cljasm.insn)
   (:use [clojure.test]))
 
 (def-asm-fn hello-world [name]
