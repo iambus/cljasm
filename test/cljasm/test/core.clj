@@ -40,8 +40,11 @@
   (areturn))
 
 (deftest test-hello-world
-  (is (= (asm-boolean 0) true))
+  (is (= (asm-boolean true) true))
+  (is (= (asm-boolean false) false))
   (is (= (asm-boolean 1) true))
+  (is (= (asm-boolean 0) true))
   (is (= (asm-boolean "x") true))
+  (is (= (asm-boolean "false") true))
   (is (= (asm-boolean "") true))
   (is (= (asm-boolean nil) false)))
