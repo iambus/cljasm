@@ -24,9 +24,10 @@
 
 (defn method-fn* [writer name args f]
   (let [return-type (:tag (meta name))
+        return-type (case name <init> (or return-type 'void) return-type)
         argument-types (map (comp :tag meta) args)
-        signature (to-method-signature argument-types (case name :init (or return-type 'void) return-type))
-        method (visit-method writer :public (case name :init "<init>" (clojure.core/name name)) signature nil nil)]
+        signature (to-method-signature argument-types return-type)
+        method (visit-method writer :public (str name) signature nil nil)]
     (visit-code method)
     (with-method-visitor method (f))
     (visit-maxs method)
@@ -34,7 +35,7 @@
 
 (defmacro method-fn [writer name args & body]
   (let [bindings (interleave args (range 1 (inc (count args))))]
-    `(method-fn* ~writer ~name ~args #(let [~@bindings] ~@body))))
+    `(method-fn* ~writer '~name ~args #(let [~@bindings] ~@body))))
 
 (defn asm-fn* [f n]
   (let [signature (format "(%s)%s" (apply str (repeat n "Ljava/lang/Object;")) "Ljava/lang/Object;")
@@ -42,7 +43,7 @@
         cw (class-writer)]
     (visit cw :v1-5 [:public :super] classname nil clojure.lang.AFn nil)
     (method-fn* cw 'invoke (repeat n ^Object 'argument) f)
-    (method-fn cw :init []
+    (method-fn cw <init> []
       (aload 0)
       (invokespecial clojure.lang.AFn "<init>" "()V")
       (return))
