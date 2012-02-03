@@ -34,7 +34,7 @@
     (reduce + (for [code access] (access-codes code code)))))
 
 (defn ^String to-class-name [c]
-  (.replace (if (class? c) (.getName ^Class c) c) \. \/))
+  (.replace (if (class? c) (.getName ^Class c) (name c)) \. \/))
 
 (defn ^String to-signature [c]
   (if (class? c)
@@ -71,7 +71,7 @@
     (to-class-name name)
     signature
     (to-class-name superName)
-    (when interfaces (into-array ^String (map to-class-name interfaces)))))
+    (when interfaces (into-array String (map to-class-name interfaces)))))
 
 (defn ^MethodVisitor visit-method [^ClassWriter writer
                                    access
@@ -168,17 +168,3 @@
   (Label.))
 
 
-
-;(let [cw (class-writer)]
-;  (visit cw :v1-6 [:public :super] "cljasm/runtime/E" nil Exception nil)
-;  (doto (visit-method cw :public "<init>" "(Ljava/lang/String;)V" nil nil)
-;    (visit-code)
-;    (visit-var-insn ALOAD 0)
-;    (visit-var-insn ALOAD 1)
-;    (visit-method-insn :special Exception "<init>" "(Ljava/lang/String;)V")
-;    (visit-insn RETURN)
-;    (visit-maxs))
-;  (let [bytes (to-byte-array cw)
-;        classloader (clojure.lang.DynamicClassLoader.)]
-;    (.defineClass classloader "cljasm.runtime.E" bytes nil)))
-;(throw (cljasm.runtime.E. "see?"))

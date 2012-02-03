@@ -1,7 +1,7 @@
 (ns cljasm.test.core
   (:use cljasm.core
         cljasm.insn)
-  (:use [clojure.test]))
+  (:use clojure.test))
 
 (def-asm-fn hello-world [name]
   (getstatic System 'out java.io.PrintStream)
@@ -48,3 +48,14 @@
   (is (= (asm-boolean "false") true))
   (is (= (asm-boolean "") true))
   (is (= (asm-boolean nil) false)))
+
+(def-asm-class SomeException Exception []
+  (<init> [^String message]
+    (aload 0)
+    (aload message)
+    (invokespecial Exception "<init>" "(Ljava/lang/String;)V")
+    (return)))
+
+(deftest test-exception
+  (is (thrown? SomeException (throw (SomeException. "hi"))))
+  (is (thrown-with-msg? SomeException #"^hi$" (throw (SomeException. "hi")))))

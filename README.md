@@ -8,6 +8,8 @@ ASM API for clojure.
 	  (:use cljasm.core
 	        cljasm.insn))
 
+	;; write a fn in asm:
+
 	(def-asm-fn hello-world [name]
 	  (getstatic System 'out java.io.PrintStream)
 	  (asm-new StringBuilder)
@@ -24,6 +26,17 @@ ASM API for clojure.
 	  (areturn))
 
 	(hello-world "you")
+
+	;; extend exception in asm:
+
+	(def-asm-class MyException Exception []
+	  (<init> [^String message]
+	    (aload 0)
+	    (aload message)
+	    (invokespecial Exception "<init>" "(Ljava/lang/String;)V")
+	    (return)))
+
+	(throw (MyException. "something right!"))
 
 
 ## License
