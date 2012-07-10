@@ -11,13 +11,15 @@
   (str *ns* "." (random-name)))
 
 (defn- to-type-signature [t]
-  (let [t (or t 'Object)]
-    (case t
-      int "I"
-      double "D"
-      void "V"
-      (let [c ^Class (resolve t)]
-        (str "L" (.replace (.getName c) \. \/) ";")))))
+  (if (string? t)
+    t
+    (let [t (or t 'Object)]
+      (case t
+        int "I"
+        double "D"
+        void "V"
+        (let [c ^Class (resolve t)]
+          (str "L" (.replace (.getName c) \. \/) ";"))))))
 
 (defn- create-field [writer field]
   (let [type (:tag (meta field))
