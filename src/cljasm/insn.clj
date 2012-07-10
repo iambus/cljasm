@@ -51,7 +51,7 @@
 
 (definsn visit-jump-keyword '[ifeq ifne iflt ifge ifgt ifle if_icmpeq if_icmpne if_icmplt if_icmpge if_icmpgt if_icmple if_acmpeq if_acmpne goto jsr ifnull ifnonnull])
 
-(defn asm-pop [type]
+(defn asm-pop []
   (visit-insn (this-method) POP))
 
 (defn asm-new [type]
