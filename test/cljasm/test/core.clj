@@ -3,6 +3,8 @@
         cljasm.insn)
   (:use clojure.test))
 
+;; write a fn in asm:
+
 (def-asm-fn hello-world [name]
   (getstatic System 'out java.io.PrintStream)
   (asm-new StringBuilder)
@@ -39,7 +41,7 @@
   (invokestatic Boolean "valueOf" "(Z)Ljava/lang/Boolean;")
   (areturn))
 
-(deftest test-hello-world
+(deftest test-asm-boolean
   (is (= (asm-boolean true) true))
   (is (= (asm-boolean false) false))
   (is (= (asm-boolean 1) true))
@@ -48,6 +50,8 @@
   (is (= (asm-boolean "false") true))
   (is (= (asm-boolean "") true))
   (is (= (asm-boolean nil) false)))
+
+;; extend exception in asm:
 
 (def-asm-class SomeException Exception []
   (<init> [^String message]
@@ -59,3 +63,29 @@
 (deftest test-exception
   (is (thrown? SomeException (throw (SomeException. "hi"))))
   (is (thrown-with-msg? SomeException #"^hi$" (throw (SomeException. "hi")))))
+
+;; write a bean class with instance fields:
+
+(def-asm-class BeanObject Object []
+  [^String name]
+  (<init> []
+    (aload 0)
+    (invokespecial Object "<init>" "()V")
+    (return))
+  (^void setName [^String name]
+    (aload 0)
+    (aload name)
+    (putfield this-class-name "name" String)
+    (return))
+  (^String getName []
+    (aload 0)
+    (getfield this-class-name "name" String)
+    (areturn)))
+
+(deftest test-exception
+  (let [x (BeanObject.)]
+    (is (= (.getName x) nil))
+    (.setName x "me")
+    (is (= (.getName x) "me"))))
+
+

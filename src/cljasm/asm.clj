@@ -1,6 +1,6 @@
 (ns cljasm.asm
   (:use cljasm.opcodes)
-  (:import [clojure.asm Opcodes ClassWriter MethodVisitor Label])
+  (:import [clojure.asm Opcodes ClassWriter MethodVisitor FieldVisitor Label])
   (:require clojure.string))
 
 ;(set! *warn-on-reflection* true)
@@ -85,6 +85,19 @@
      desc
      signature
      (when exceptions (into-array ^String (map to-class-name exceptions)))))
+
+(defn ^FieldVisitor visit-field [^ClassWriter writer
+                        access
+                        ^String name
+                        ^String desc
+                        ^String signature
+                        value]
+  (.visitField writer
+    (to-access-code access)
+    name
+    desc
+    signature
+    value))
 
 (defn visit-end [visitor]
   (.visitEnd visitor))

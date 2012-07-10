@@ -38,6 +38,24 @@ ASM API for clojure.
 
 	(throw (MyException. "something right!"))
 
+	;; write a bean class with instance fields:
+
+	(def-asm-class BeanObject Object []
+	  [^String name]
+	  (<init> []
+	    (aload 0)
+	    (invokespecial Object "<init>" "()V")
+	    (return))
+	  (^void setName [^String name]
+	    (aload 0)
+	    (aload name)
+	    (putfield this-class-name "name" String)
+	    (return))
+	  (^String getName []
+	    (aload 0)
+	    (getfield this-class-name "name" String)
+	    (areturn)))
+
 
 ## License
 
